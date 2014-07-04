@@ -1,7 +1,7 @@
 puppet-skeleton
 ===============
 
-This is a skeleton for a standalone git-based puppet package.  It is designed so that you can check out this repository onto an Ubuntu machine and run the update script to apply the settings in the included site.pp.
+This is a skeleton for a standalone git-based puppet package.  It is designed so that you can check out this repository onto an Ubuntu machine and run the update script to handle bootstrapping puppet and applying the settings in the included site.pp.
 
 You can fork this skeleton to create standalone puppet git repos that are useful for personal computers and laptops.  When you need to update a machine, just clone or checkout the git repo onto that machine and run ./update.sh.  You don't need to do anything else!
 
