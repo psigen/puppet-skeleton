@@ -1,70 +1,77 @@
 #!/bin/bash
 #
-# This script updates the machine using the puppet configuration specified
-# in this directory.
+# This script bootstraps a ruby installation and updates the machine using the
+# puppet configuration specified in this directory structure.
 #
 # Copyright (C) 2013, Cephal Systems LLC, All rights reserved.
 #
+
+# Detect and change to this script's directory.
 DIR=$(dirname "${BASH_SOURCE[0]}")
-
-# Default paths to various tools.
-APT=/usr/bin/apt-get
-GEM=/usr/bin/gem
-BUNDLE=/usr/bin/bundle
-PUPPET=/usr/bin/puppet
-LIBRARIAN=/usr/bin/librarian-puppet
-
-# Change to this script's directory.
 pushd ${DIR} > /dev/null
+
+# Download and install RVM and ruby latest-stable locally.
+# TODO: Is this overkill?  Naaaaaah!
+if [[ ! -x ./.rvm/bin/rvm ]]
+then
+	export rvm_path="$(pwd)/.rvm"
+	curl -sSL https://get.rvm.io \
+		| bash -s stable --ruby \
+		|| { echo "ERROR: Failed to install RVM/Ruby locally." && exit 1; }
+fi
+
+# Source bash script to use local RVM installation.
+source ./.rvm/scripts/rvm \
+	|| { echo "ERROR: Failed to initialize local Ruby installation." && exit 2; }
+GEM=./.rvm/rubies/default/bin/gem
+
+# We just have to trust that these are the right ones in RVM...
+PUPPET=puppet
+BUNDLE=bundle
+LIBRARIAN=librarian-puppet
+
+# Install puppet if it is not already installed.
+if ! ${GEM} list | grep --quiet "^puppet "
+then
+	echo "Installing Puppet from gem..."
+	${GEM} install puppet \
+		|| { echo "ERROR: Failed to install Puppet gem locally." && exit 3; }
+	echo "Puppet installation complete."
+fi
+
+# Install bundler if it is not already installed.
+if ! ${GEM} list | grep --quiet "^bundler "
+then
+	echo "Installing Bundler from gem..."
+	${GEM} install bundler \
+		|| { echo "ERROR: Failed to install Bundler gem locally." && exit 4; }
+	echo "Bundler installation complete."
+fi
+
+# Install librarian-puppet if it is not already installed.
+if ! ${GEM} list | grep --quiet "^librarian-puppet "
+then
+	echo "Installing librarian-puppet from gem..."
+	# Install librarian-puppet via the Gemfile.
+	${BUNDLE} install \
+		|| { echo "ERROR: Failed to install Librarian-Puppet gem locally." && exit 5; }
+	echo "Librarian-puppet installation complete."
+fi
+
+# Initialize librarian-puppet if necessary.
+if [ ! -d .librarian ]; then
+	echo "Initializing librarian-puppet from Puppetfile..."
+	${LIBRARIAN} install
+	echo "Librarian-puppet initialized."
+fi
+
+# TODO: remove this
+exit 0
 
 # Warn the user if not running as root. (This may be desired in some special
 # cases, but most commands probably won't work)
 if [[ $EUID -ne 0 ]]; then
    echo "WARNING: Script was not run as root, install commands may fail!" >&2
-fi
-
-# Install puppet if it is not already installed.
-if [ ! -x ${PUPPET} ]; then
-	echo "Puppet was not found at '${PUPPET}'."
-	echo "Installing Puppet from apt..."
-
-	${APT} install -y puppet-common
-
-	echo "Puppet installation complete."
-fi
-
-# Install librarian-puppet if it is not already installed.
-if [ ! -x ${LIBRARIAN} ]; then
-	echo "Librarian-puppet was not found at '${LIBRARIAN}'."
-	echo "Installing librarian-puppet from gem..."
-
-    if [ ! -x ${BUNDLE} ]; then
-		if [ ! -x ${GEM} ]; then
-			# Install gem if it is not already installed.
-			${APT} install -y rubygems
-		fi
-	
-		# Install bundle if it is not already installed.
-		${GEM} install bundler
-	fi
-
-	# Install librarian-puppet via the Gemfile.
-	${BUNDLE} install
-
-	echo "Librarian-puppet installation complete."
-fi
-
-# TODO: remove this
-echo "DEBUG EXIT"
-exit 0
-
-# Initialize librarian-puppet if necessary.
-if [ ! -d .librarian ]; then
-	echo "Initializing librarian-puppet from Puppetfile..."
-
-	${LIBRARIAN} install
-
-	echo "Librarian-puppet initialized."
 fi
 
 # Apply the puppet manifest from this repository.

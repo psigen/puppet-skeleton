@@ -2,4 +2,5 @@ Puppetfile.lock
 Gemfile.lock
 modules/
 .tmp/
+.rvm/
 .librarian/
