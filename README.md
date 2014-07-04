@@ -7,7 +7,7 @@ You can fork this skeleton to create standalone puppet git repos that are useful
 
 How it works
 ------------
-The update.sh script first checks for a few core packages, namely puppet-common and librarian-puppet.  If these don't exist, some version of them (not necessarily the latest) is downloaded and installed.
+The update.sh script first checks for a few core packages, namely puppet-common and librarian-puppet.  If these don't exist, some version of them (not necessarily the latest) is downloaded and installed.  It is assumed that puppet itself can install more recent versions if necessary.
 
 Librarian-puppet is then used to checkout/update any necessary dependencies into the ./modules directory.  (See https://github.com/rodjek/librarian-puppet for more details).  If you need to include any local packages, put them in ./local and include them in the Puppetfile as relative file URIs.
 
