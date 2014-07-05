@@ -25,20 +25,6 @@ source ./.rvm/scripts/rvm \
 	|| { echo "ERROR: Failed to initialize local Ruby installation." && exit 2; }
 GEM=./.rvm/rubies/default/bin/gem
 
-# We just have to trust that these are the right ones in RVM...
-PUPPET=puppet
-BUNDLE=bundle
-LIBRARIAN=librarian-puppet
-
-# Install puppet if it is not already installed.
-if ! ${GEM} list | grep --quiet "^puppet "
-then
-	echo "Installing Puppet from gem..."
-	${GEM} install puppet \
-		|| { echo "ERROR: Failed to install Puppet gem locally." && exit 3; }
-	echo "Puppet installation complete."
-fi
-
 # Install bundler if it is not already installed.
 if ! ${GEM} list | grep --quiet "^bundler "
 then
@@ -47,16 +33,19 @@ then
 		|| { echo "ERROR: Failed to install Bundler gem locally." && exit 4; }
 	echo "Bundler installation complete."
 fi
+BUNDLE=bundle
 
 # Install librarian-puppet if it is not already installed.
 if ! ${GEM} list | grep --quiet "^librarian-puppet "
 then
-	echo "Installing librarian-puppet from gem..."
+	echo "Installing required gems from gemfile..."
 	# Install librarian-puppet via the Gemfile.
 	${BUNDLE} install \
-		|| { echo "ERROR: Failed to install Librarian-Puppet gem locally." && exit 5; }
-	echo "Librarian-puppet installation complete."
+		|| { echo "ERROR: Failed to install gems locally." && exit 5; }
+	echo "Gem installation complete."
 fi
+PUPPET=puppet
+LIBRARIAN=librarian-puppet
 
 # Initialize librarian-puppet if necessary.
 if [ ! -d .librarian ]; then
@@ -77,10 +66,8 @@ fi
 
 # Apply the puppet manifest from this repository.
 echo "Starting puppet update..."
-
 ${PUPPET} apply --hiera_config ./hiera.yaml \
                 --modulepath ./modules \
                 manifests/site.pp \
     || { echo "ERROR: Failure during puppet configuration." && exit 1; }
-
 echo "Update complete."
