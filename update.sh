@@ -61,7 +61,8 @@ fi
 # Initialize librarian-puppet if necessary.
 if [ ! -d .librarian ]; then
 	echo "Initializing librarian-puppet from Puppetfile..."
-	${LIBRARIAN} install
+	${LIBRARIAN} install \
+		|| { echo "ERROR: Failed to initialize Librarian-Puppet." && exit 6; }
 	echo "Librarian-puppet initialized."
 fi
 
