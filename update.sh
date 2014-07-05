@@ -3,7 +3,7 @@
 # This script bootstraps a ruby installation and updates the machine using the
 # puppet configuration specified in this directory structure.
 #
-# Copyright (C) 2013, Cephal Systems LLC, All rights reserved.
+# Copyright (C) 2014, Cephal Systems LLC, All rights reserved.
 #
 
 # Detect and change to this script's directory.
@@ -55,13 +55,10 @@ if [ ! -d .librarian ]; then
 	echo "Librarian-puppet initialized."
 fi
 
-# TODO: remove this
-exit 0
-
 # Warn the user if not running as root. (This may be desired in some special
 # cases, but most commands probably won't work)
 if [[ $EUID -ne 0 ]]; then
-   echo "WARNING: Script was not run as root, install commands may fail!" >&2
+   echo "WARNING: Script not run as root, system-wide install commands may fail!" >&2
 fi
 
 # Apply the puppet manifest from this repository.
