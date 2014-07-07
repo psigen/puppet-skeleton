@@ -5,6 +5,16 @@ This is a skeleton for a standalone git-based puppet package.  It is designed so
 
 You can fork this skeleton to create standalone puppet git repos that are useful for personal computers and laptops.  When you need to update a machine, just clone or checkout the git repo onto that machine and run ./update.sh.  You don't need to do anything else!
 
+Content
+-------
+./update.sh - run this to set up and run puppet.
+./Puppetfile - contains directives for Librarian-Puppet to fetch modules.
+./Gemfile - contains ruby dependencies for this package.
+./hiera.yaml - contains the top-level hiera configuration for puppet.
+manifests - this directory must contains the main site.pp file.
+modules - this directory holds modules managed by Librarian-Puppet.  DO NOT PUT FILES HERE YOURSELF.
+local - this directory is a placeholder for local modules, since ./modules is managed by Librarian-Puppet
+
 How it works
 ------------
 The update.sh script first checks for a few core packages, namely puppet-common and librarian-puppet.  If these don't exist, some version of them (not necessarily the latest) is downloaded and installed.  It is assumed that puppet itself can install more recent versions if necessary.

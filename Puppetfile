@@ -8,3 +8,6 @@ mod "puppetlabs/stdlib",
 
 mod "puppetlabs/vcsrepo",
   :git => "git://github.com/puppetlabs/puppetlabs-vcsrepo.git"
+
+mod "private/test_module",
+  :path => "./local/test_module"

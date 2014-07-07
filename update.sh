@@ -53,6 +53,10 @@ if [ ! -d .librarian ]; then
 	${LIBRARIAN} install \
 		|| { echo "ERROR: Failed to initialize Librarian-Puppet." && exit 6; }
 	echo "Librarian-puppet initialized."
+else
+	# TODO: check this with librarian-puppet outdated.
+	${LIBRARIAN} install \
+		|| { echo "ERROR: Failed to initialize Librarian-Puppet." && exit 6; }
 fi
 
 # Warn the user if not running as root. (This may be desired in some special
